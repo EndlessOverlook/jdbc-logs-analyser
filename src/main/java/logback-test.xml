@@ -29,7 +29,7 @@
 			</fileNamePattern>
 		</rollingPolicy>
 	</appender>
-	<logger name="com.thunisoft" level="info" additivity="false">
+	<logger name="endless.overlook" level="info" additivity="false">
 		<appender-ref ref="stdout" />
 		<appender-ref ref="file" />
 	</logger>

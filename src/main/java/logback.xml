@@ -21,7 +21,7 @@
 			</fileNamePattern>
 		</rollingPolicy>
 	</appender>
-	<logger name="com.thunisoft" level="error" additivity="false">
+	<logger name="endless.overlook" level="error" additivity="false">
 		<appender-ref ref="file" />
 	</logger>
 	<root level="error">

@@ -30,10 +30,10 @@ public interface JlaConstants {
     String C_PREFIX_REPORT_TOPFUZZYQUERY = "TopFuzzyQuery_";
 
     /** 日志分析器包路径前缀 **/
-    String C_PREFIX_ANALYSERS = "com.thunisoft.jla.service.analyser.impl.";
+    String C_PREFIX_ANALYSERS = "endless.overlook.jla.service.analyser.impl.";
 
     /** 日志输出器包路径前缀 **/
-    String C_PREFIX_PRINTERS = "com.thunisoft.jla.service.printer.impl.";
+    String C_PREFIX_PRINTERS = "endless.overlook.jla.service.printer.impl.";
 
     /** 日志分析结果报告文件后缀 **/
     String C_SUFFIX_REPORT_LOG = ".log";
