@@ -1,18 +1,12 @@
 package endless.overlook.jla.service.analyser.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import endless.overlook.jla.beans.BusinessSqlEntity;
 import endless.overlook.jla.beans.BusinessUnionTableEntity;
 import endless.overlook.jla.constants.JlaConstants;
 import endless.overlook.jla.service.analyser.IBusinessSqlEntityAnalyser;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Description:<b>业务表操作情况分析器</b>
@@ -57,7 +51,7 @@ public class BusinessTableAnalyser implements IBusinessSqlEntityAnalyser {
             if (!tableName2EntityMap
                     .containsKey(businessSqlEntity.getTableName())) {
                 tableName2EntityMap.put(businessSqlEntity.getTableName(),
-                    businessTableEntity);
+                        businessTableEntity);
             } else {
                 tableName2EntityMap.get(businessSqlEntity.getTableName())
                         .increaseCount();
@@ -73,17 +67,17 @@ public class BusinessTableAnalyser implements IBusinessSqlEntityAnalyser {
             tableEntityList.add(entry.getValue());
         }
         Collections.sort(tableEntityList,
-            new Comparator<BusinessUnionTableEntity>() {
-                @Override
-                public int compare(BusinessUnionTableEntity tableEntity1,
-                        BusinessUnionTableEntity tableEntity2) {
-                    Integer count1 = tableEntity1.getTableHitCount();
-                    Integer count2 = tableEntity2.getTableHitCount();
-                    return count2 - count1;
-                }
-            });
+                new Comparator<BusinessUnionTableEntity>() {
+                    @Override
+                    public int compare(BusinessUnionTableEntity tableEntity1,
+                            BusinessUnionTableEntity tableEntity2) {
+                        Integer count1 = tableEntity1.getTableHitCount();
+                        Integer count2 = tableEntity2.getTableHitCount();
+                        return count2 - count1;
+                    }
+                });
         analysedResult.put(JlaConstants.C_KEY_BUSINESS_UNIONTABLEENTITY,
-            tableEntityList);
+                tableEntityList);
         return analysedResult;
     }
 }

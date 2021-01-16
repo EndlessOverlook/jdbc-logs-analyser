@@ -1,18 +1,13 @@
 package endless.overlook.jla.service.analyser.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import endless.overlook.jla.beans.BusinessPlainTableEntity;
 import endless.overlook.jla.beans.BusinessSqlEntity;
 import endless.overlook.jla.constants.JlaConstants;
 import endless.overlook.jla.constants.JlaSymbolConstants;
 import endless.overlook.jla.service.analyser.IBusinessSqlEntityAnalyser;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.*;
 
 /**
  * Description:<b>实体表操作情况分析器</b>
@@ -60,8 +55,8 @@ public class PlainTableAnalyser implements IBusinessSqlEntityAnalyser {
                         if (!plainTableName2EntityMap.containsKey(tableName)) {
                             plainTableEntity = new BusinessPlainTableEntity(
                                     tableName);
-                            plainTableName2EntityMap.put(tableName,
-                                plainTableEntity);
+                            plainTableName2EntityMap
+                                    .put(tableName, plainTableEntity);
                         } else {
                             plainTableEntity = plainTableName2EntityMap
                                     .get(tableName);
@@ -69,22 +64,21 @@ public class PlainTableAnalyser implements IBusinessSqlEntityAnalyser {
                         }
                         //分操作类型统计
                         if (StringUtils.startsWithIgnoreCase(
-                            businessSqlEntity.getPlainSql(), "SELECT")
+                                businessSqlEntity.getPlainSql(), "SELECT")
                                 || StringUtils.startsWithIgnoreCase(
-                                    businessSqlEntity.getPlainSql(),
-                                    "SET ROWCOUNT")
+                                businessSqlEntity.getPlainSql(), "SET ROWCOUNT")
                                 || StringUtils.startsWithIgnoreCase(
-                                    businessSqlEntity.getPlainSql(),
-                                    "SET TRANSACTION ISOLATION LEVEL")) {
+                                businessSqlEntity.getPlainSql(),
+                                "SET TRANSACTION ISOLATION LEVEL")) {
                             plainTableEntity.increaseSelectCount();
                         } else if (StringUtils.startsWithIgnoreCase(
-                            businessSqlEntity.getPlainSql(), "UPDATE")) {
+                                businessSqlEntity.getPlainSql(), "UPDATE")) {
                             plainTableEntity.increaseUpdateCount();
                         } else if (StringUtils.startsWithIgnoreCase(
-                            businessSqlEntity.getPlainSql(), "DELETE")) {
+                                businessSqlEntity.getPlainSql(), "DELETE")) {
                             plainTableEntity.increaseDeleteCount();
                         } else if (StringUtils.startsWithIgnoreCase(
-                            businessSqlEntity.getPlainSql(), "INSERT")) {
+                                businessSqlEntity.getPlainSql(), "INSERT")) {
                             plainTableEntity.increaseInsertCount();
                         }
                     }
@@ -95,17 +89,17 @@ public class PlainTableAnalyser implements IBusinessSqlEntityAnalyser {
         List<Map.Entry<String, BusinessPlainTableEntity>> plainTableCountMappingsList = new ArrayList<Map.Entry<String, BusinessPlainTableEntity>>(
                 plainTableName2EntityMap.entrySet());
         Collections.sort(plainTableCountMappingsList,
-            new Comparator<Map.Entry<String, BusinessPlainTableEntity>>() {
-                @Override
-                public int compare(
-                        Map.Entry<String, BusinessPlainTableEntity> mappings1,
-                        Map.Entry<String, BusinessPlainTableEntity> mappings2) {
-                    return (int) (mappings2.getValue().getHitCount()
-                            - mappings1.getValue().getHitCount());
-                }
-            });
+                new Comparator<Map.Entry<String, BusinessPlainTableEntity>>() {
+                    @Override
+                    public int compare(
+                            Map.Entry<String, BusinessPlainTableEntity> mappings1,
+                            Map.Entry<String, BusinessPlainTableEntity> mappings2) {
+                        return (int) (mappings2.getValue().getHitCount()
+                                - mappings1.getValue().getHitCount());
+                    }
+                });
         analysedResult.put(JlaConstants.C_KEY_BUSINESS_PLAINTALBECOUNTMAPPINGS,
-            plainTableCountMappingsList);
+                plainTableCountMappingsList);
         return analysedResult;
     }
 }

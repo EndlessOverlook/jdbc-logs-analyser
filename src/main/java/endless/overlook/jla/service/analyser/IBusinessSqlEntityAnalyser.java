@@ -1,9 +1,9 @@
 package endless.overlook.jla.service.analyser;
 
+import endless.overlook.jla.beans.BusinessSqlEntity;
+
 import java.util.List;
 import java.util.Map;
-
-import endless.overlook.jla.beans.BusinessSqlEntity;
 
 /**
  * Description:<b>报告分析器接口</b>

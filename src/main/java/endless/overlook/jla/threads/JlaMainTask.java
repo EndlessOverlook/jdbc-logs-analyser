@@ -1,5 +1,21 @@
 package endless.overlook.jla.threads;
 
+import endless.overlook.jla.beans.BusinessSqlEntity;
+import endless.overlook.jla.config.ConfigLoader;
+import endless.overlook.jla.constants.JlaConfigConstants;
+import endless.overlook.jla.constants.JlaConstants;
+import endless.overlook.jla.constants.JlaNumberConstants;
+import endless.overlook.jla.constants.JlaSymbolConstants;
+import endless.overlook.jla.service.analyser.IBusinessSqlEntityAnalyser;
+import endless.overlook.jla.service.printer.AbstractAnalysedReportPrinter;
+import endless.overlook.jla.service.processor.IterationProcessor;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -8,30 +24,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import endless.overlook.jla.beans.BusinessSqlEntity;
-import endless.overlook.jla.config.ConfigLoader;
-import endless.overlook.jla.constants.JlaConfigConstants;
-import endless.overlook.jla.constants.JlaNumberConstants;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.concurrent.BasicThreadFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import endless.overlook.jla.constants.JlaConstants;
-import endless.overlook.jla.constants.JlaSymbolConstants;
-import endless.overlook.jla.service.analyser.IBusinessSqlEntityAnalyser;
-import endless.overlook.jla.service.printer.AbstractAnalysedReportPrinter;
-import endless.overlook.jla.service.processor.IterationProcessor;
+import java.util.concurrent.*;
 
 /**
  * Description:<b>分析JDBC日志任务实现类</b>
@@ -81,20 +74,18 @@ public class JlaMainTask implements Callable<Boolean> {
     /** 日志分析线程池 **/
     private static final CompletionService<Boolean> analysingCompletionService = new ExecutorCompletionService<Boolean>(
             Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors()
-                        + JlaNumberConstants.N_ONE,
-                new BasicThreadFactory.Builder()
-                        .namingPattern("JlaAnalysingTask-%d")
-                        .build()));
+                    Runtime.getRuntime().availableProcessors()
+                            + JlaNumberConstants.N_ONE,
+                    new BasicThreadFactory.Builder()
+                            .namingPattern("JlaAnalysingTask-%d").build()));
 
     /** 报告输出分析线程池 **/
     private static final CompletionService<Boolean> printingCompletionService = new ExecutorCompletionService<Boolean>(
             Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors()
-                        + JlaNumberConstants.N_ONE,
-                new BasicThreadFactory.Builder()
-                        .namingPattern("JlaPrintingTask-%d")
-                        .build()));
+                    Runtime.getRuntime().availableProcessors()
+                            + JlaNumberConstants.N_ONE,
+                    new BasicThreadFactory.Builder()
+                            .namingPattern("JlaPrintingTask-%d").build()));
 
     /**
      * Description:<b>构造函数</b>
@@ -112,7 +103,7 @@ public class JlaMainTask implements Callable<Boolean> {
         this.configLoader = configLoader;
         this.analysingDirectory = analysingDirectory;
         String processCharSet = configLoader.getConfig(
-            JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_PROCESSCHARSET);
+                JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_PROCESSCHARSET);
         _CHARSET = "GB2312";
         if (StringUtils.isNotBlank(processCharSet)) {
             _CHARSET = processCharSet;
@@ -163,10 +154,10 @@ public class JlaMainTask implements Callable<Boolean> {
         try {
             //遍历JDBC日志
             List<BusinessSqlEntity> businessSqlEntity = iteratingJdbcLogFile(
-                jdbcLogFile);
+                    jdbcLogFile);
             //分析JDBC日志
             Map<String, Object> resultMap = analysingJdbcLogFile(
-                businessSqlEntity);
+                    businessSqlEntity);
             //输出分析报告
             generateReportFiles(jdbcLogFile, resultMap, analysingDirectory);
         } catch (IOException e) {
@@ -185,24 +176,24 @@ public class JlaMainTask implements Callable<Boolean> {
      * @author Ralph
      * @since 2018-4-26 下午5:36:20
      */
-    private List<BusinessSqlEntity> iteratingJdbcLogFile(
-            File jdbcLogFile) throws IOException {
+    private List<BusinessSqlEntity> iteratingJdbcLogFile(File jdbcLogFile)
+            throws IOException {
         logger.info("开始----->遍历文件[{}]......", jdbcLogFile.getName());
         IterationProcessor iterationProcessor = new IterationProcessor(
                 configLoader);
-        LineIterator lineIterator = FileUtils.lineIterator(jdbcLogFile,
-            _CHARSET);
+        LineIterator lineIterator = FileUtils
+                .lineIterator(jdbcLogFile, _CHARSET);
         try {
             Integer currentLineNumber = JlaNumberConstants.N_ZERO;
             /** !!!文件最后需要至少保留两行空行，否则最后一个SqlEntity会丢失！！！ **/
             while (lineIterator.hasNext()) {
                 String currentLine = lineIterator.nextLine();
-                if (currentLineNumber > JlaNumberConstants.N_ZERO
-                        && (currentLineNumber
-                                % JlaNumberConstants.N_TEN_THUSANDS == JlaNumberConstants.N_ZERO)) {
+                if (currentLineNumber > JlaNumberConstants.N_ZERO && (
+                        currentLineNumber % JlaNumberConstants.N_TEN_THUSANDS
+                                == JlaNumberConstants.N_ZERO)) {
                     logger.warn("Jdbc日志文件[{}]已遍历{}W行......",
-                        jdbcLogFile.getName(),
-                        currentLineNumber / JlaNumberConstants.N_TEN_THUSANDS);
+                            jdbcLogFile.getName(), currentLineNumber
+                                    / JlaNumberConstants.N_TEN_THUSANDS);
                 }
                 currentLineNumber++;
                 if (!iterationProcessor.processLine(currentLine)) {
@@ -234,7 +225,7 @@ public class JlaMainTask implements Callable<Boolean> {
         for (String analyserClass : analyserClassesList) {
             try {
                 Class<?> analyserClazz = Class.forName(
-                    JlaConstants.C_PREFIX_ANALYSERS + analyserClass);
+                        JlaConstants.C_PREFIX_ANALYSERS + analyserClass);
                 Constructor<?> analyserConstructor = analyserClazz
                         .getConstructor();
                 IBusinessSqlEntityAnalyser sqlEntityAnalyser = (IBusinessSqlEntityAnalyser) analyserConstructor
@@ -259,8 +250,8 @@ public class JlaMainTask implements Callable<Boolean> {
             }
         }
 
-        for (int i = JlaNumberConstants.N_ZERO; i < analyserClassesList
-                .size(); i++) {
+        for (int i = JlaNumberConstants.N_ZERO;
+             i < analyserClassesList.size(); i++) {
             try {
                 Future<Boolean> future = analysingCompletionService.take();
                 future.get();
@@ -292,13 +283,15 @@ public class JlaMainTask implements Callable<Boolean> {
             try {
                 Class<?> printerClazz = Class
                         .forName(JlaConstants.C_PREFIX_PRINTERS + printerClass);
-                Constructor<?> printerConstructor = printerClazz.getConstructor(
-                    File.class, Charset.class, File.class, ConfigLoader.class);
+                Constructor<?> printerConstructor = printerClazz
+                        .getConstructor(File.class, Charset.class, File.class,
+                                ConfigLoader.class);
                 AbstractAnalysedReportPrinter analysedReportPrinter = (AbstractAnalysedReportPrinter) printerConstructor
                         .newInstance(jdbcLogFile, _PROCESS_CHARSET,
-                            analysingDirectory, configLoader);
-                printingCompletionService.submit(
-                    new JlaPrintingTask(analysedMap, analysedReportPrinter));
+                                analysingDirectory, configLoader);
+                printingCompletionService
+                        .submit(new JlaPrintingTask(analysedMap,
+                                analysedReportPrinter));
             } catch (ClassNotFoundException e) {
                 logger.error("实例化输出器失败......", e);
             } catch (InstantiationException e) {
@@ -316,8 +309,8 @@ public class JlaMainTask implements Callable<Boolean> {
             }
         }
 
-        for (int i = JlaNumberConstants.N_ZERO; i < printerClassesList
-                .size(); i++) {
+        for (int i = JlaNumberConstants.N_ZERO;
+             i < printerClassesList.size(); i++) {
             try {
                 Future<Boolean> future = printingCompletionService.take();
                 future.get();

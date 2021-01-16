@@ -1,17 +1,11 @@
 package endless.overlook.jla.service.analyser.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
 import endless.overlook.jla.beans.BusinessSqlEntity;
 import endless.overlook.jla.constants.JlaConstants;
 import endless.overlook.jla.service.analyser.IBusinessSqlEntityAnalyser;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Description:<b>SQL执行情况分析器</b>
@@ -52,7 +46,7 @@ public class SqlExecutionAnalyser implements IBusinessSqlEntityAnalyser {
             if (!plainSql2EntityMap
                     .containsKey(businessSqlEntity.getPlainSql())) {
                 plainSql2EntityMap.put(businessSqlEntity.getPlainSql(),
-                    businessSqlEntity);
+                        businessSqlEntity);
             } else {
                 plainSql2EntityMap.get(businessSqlEntity.getPlainSql())
                         .increaseCount();
@@ -76,8 +70,8 @@ public class SqlExecutionAnalyser implements IBusinessSqlEntityAnalyser {
                 return count2 - count1;
             }
         });
-        analysedResult.put(JlaConstants.C_KEY_BUSINESS_SQLEXECUTION,
-            sqlEntityList);
+        analysedResult
+                .put(JlaConstants.C_KEY_BUSINESS_SQLEXECUTION, sqlEntityList);
         return analysedResult;
     }
 }

@@ -1,23 +1,17 @@
 package endless.overlook.jla.config;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.ResourceBundle;
-
+import endless.overlook.jla.constants.JlaConfigConstants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import endless.overlook.jla.constants.JlaConfigConstants;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Description:<b>配置加载器</b>
@@ -72,7 +66,7 @@ public class ConfigLoader {
                     Entry<String, String> externalConfigEntry = (Entry<String, String>) externalConfigIterator
                             .next();
                     defaultPropertiesMappings.put(externalConfigEntry.getKey(),
-                        externalConfigEntry.getValue());
+                            externalConfigEntry.getValue());
                 }
             } catch (IOException e) {
                 logger.error("读取外部配置文件时失败......", e);
@@ -92,7 +86,8 @@ public class ConfigLoader {
                 String defaultPropertiesKey = defaultPropertiesKeys
                         .nextElement();
                 defaultPropertiesMappings.put(defaultPropertiesKey,
-                    defaultPropertiesBundle.getString(defaultPropertiesKey));
+                        defaultPropertiesBundle
+                                .getString(defaultPropertiesKey));
             }
             logger.info("默认配置文件读取[结束]......");
         }
@@ -129,6 +124,6 @@ public class ConfigLoader {
     public boolean validateConfigValueValid(String configKey,
             String destinationValue) {
         return StringUtils.equalsIgnoreCase(getConfig(configKey),
-            StringUtils.trimToEmpty(destinationValue));
+                StringUtils.trimToEmpty(destinationValue));
     }
 }

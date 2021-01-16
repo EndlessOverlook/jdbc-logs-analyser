@@ -1,22 +1,21 @@
 package endless.overlook.jla.service.printer.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.io.Files;
 import endless.overlook.jla.beans.BusinessSqlEntity;
 import endless.overlook.jla.config.ConfigLoader;
 import endless.overlook.jla.constants.JlaConstants;
 import endless.overlook.jla.constants.JlaSymbolConstants;
+import endless.overlook.jla.service.printer.AbstractAnalysedReportPrinter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.Files;
-import endless.overlook.jla.service.printer.AbstractAnalysedReportPrinter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Description:<b>SQL执行情况输出器</b>
@@ -44,11 +43,9 @@ public class SqlExecutionPrinter extends AbstractAnalysedReportPrinter {
      * @param configLoader
      *              配置加载器
      */
-    public SqlExecutionPrinter(
-            File jdbcLogFile, Charset processCharset, File analysingDirectory,
-            ConfigLoader configLoader) {
-        super(jdbcLogFile, processCharset,
-                analysingDirectory, configLoader);
+    public SqlExecutionPrinter(File jdbcLogFile, Charset processCharset,
+            File analysingDirectory, ConfigLoader configLoader) {
+        super(jdbcLogFile, processCharset, analysingDirectory, configLoader);
     }
 
     /**
@@ -69,22 +66,22 @@ public class SqlExecutionPrinter extends AbstractAnalysedReportPrinter {
                 StringBuffer sqlReportName = new StringBuffer(
                         JlaConstants.C_PREFIX_REPORT_ANALYSED);
                 sqlReportName.append(JlaConstants.C_PREFIX_REPORT_SQLEXECUTION);
-                sqlReportName.append(FilenameUtils.getBaseName(jdbcLogFile
-                        .getAbsolutePath()));
+                sqlReportName.append(FilenameUtils
+                        .getBaseName(jdbcLogFile.getAbsolutePath()));
                 sqlReportName.append(JlaConstants.C_SUFFIX_REPORT_LOG);
                 File sqlExecutionResultFile = new File(analysingDirectory,
                         sqlReportName.toString());
                 sqlExecutionResultFile.createNewFile();
                 logger.info("开始生成[{}]分析结果SqlExecution报告......",
-                    sqlExecutionResultFile.getName());
+                        sqlExecutionResultFile.getName());
 
                 for (BusinessSqlEntity sqlEntity : sqlEntityList) {
                     Files.append(sqlEntity.getHeadInfo()
-                            + JlaSymbolConstants.C_SYMBOL_NEXTLINE,
-                        sqlExecutionResultFile, processCharset);
+                                    + JlaSymbolConstants.C_SYMBOL_NEXTLINE,
+                            sqlExecutionResultFile, processCharset);
                     Files.append(sqlEntity.getPlainSql()
-                            + JlaSymbolConstants.C_SYMBOL_NEXTLINE,
-                        sqlExecutionResultFile, processCharset);
+                                    + JlaSymbolConstants.C_SYMBOL_NEXTLINE,
+                            sqlExecutionResultFile, processCharset);
                     StringBuffer sqlEntityInfo = new StringBuffer("---业务表：");
                     sqlEntityInfo.append(JlaSymbolConstants.C_SYMBOL_OPENBRACE);
                     sqlEntityInfo.append(sqlEntity.getTableName());
@@ -99,12 +96,12 @@ public class SqlExecutionPrinter extends AbstractAnalysedReportPrinter {
                     sqlEntityInfo.append(JlaSymbolConstants.C_SYMBOL_NEXTLINE);
                     sqlEntityInfo.append(JlaSymbolConstants.C_SYMBOL_NEXTLINE);
                     Files.append(sqlEntityInfo.toString(),
-                        sqlExecutionResultFile, processCharset);
+                            sqlExecutionResultFile, processCharset);
                 }
             }
         } catch (IOException e) {
-            logger.error("生成{}的SqlExecution报告失败......",
-                jdbcLogFile.getName(), e);
+            logger.error("生成{}的SqlExecution报告失败......", jdbcLogFile.getName(),
+                    e);
         }
     }
 }

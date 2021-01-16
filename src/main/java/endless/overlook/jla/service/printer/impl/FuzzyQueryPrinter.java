@@ -1,25 +1,24 @@
 package endless.overlook.jla.service.printer.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.google.common.io.Files;
 import endless.overlook.jla.config.ConfigLoader;
 import endless.overlook.jla.constants.JlaConfigConstants;
 import endless.overlook.jla.constants.JlaConstants;
 import endless.overlook.jla.constants.JlaNumberConstants;
 import endless.overlook.jla.constants.JlaSymbolConstants;
+import endless.overlook.jla.service.printer.AbstractAnalysedReportPrinter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.Files;
-import endless.overlook.jla.service.printer.AbstractAnalysedReportPrinter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Description:<b>模糊查询情况输出器</b>
@@ -46,11 +45,9 @@ public class FuzzyQueryPrinter extends AbstractAnalysedReportPrinter {
      * @param configLoader
      *              配置加载器
      */
-    public FuzzyQueryPrinter(
-            File jdbcLogFile, Charset processCharset, File analysingDirectory,
-            ConfigLoader configLoader) {
-        super(jdbcLogFile, processCharset,
-                analysingDirectory, configLoader);
+    public FuzzyQueryPrinter(File jdbcLogFile, Charset processCharset,
+            File analysingDirectory, ConfigLoader configLoader) {
+        super(jdbcLogFile, processCharset, analysingDirectory, configLoader);
     }
 
     /**
@@ -65,8 +62,8 @@ public class FuzzyQueryPrinter extends AbstractAnalysedReportPrinter {
     public void printReport(Map<String, Object> resultMap) {
         try {
             //业务表操作次数统计
-            String topNNumberString = configLoader
-                    .getConfig(JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_FUZZYQUERYTOPNUMBER);
+            String topNNumberString = configLoader.getConfig(
+                    JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_FUZZYQUERYTOPNUMBER);
             Integer topNNumber = null;
             if (StringUtils.isNotBlank(topNNumberString)) {
                 topNNumber = Integer.valueOf(topNNumberString);
@@ -87,10 +84,10 @@ public class FuzzyQueryPrinter extends AbstractAnalysedReportPrinter {
                         fuzzyQueryReportName.toString());
                 fuzzyQueryResultFile.createNewFile();
                 logger.info("开始生成[{}]分析结果TopFuzzyQuery报告......",
-                    fuzzyQueryResultFile.getName());
+                        fuzzyQueryResultFile.getName());
 
-                for (int i = JlaNumberConstants.N_ONE; i <= fuzzyQueryCountMappingsList
-                        .size(); i++) {
+                for (int i = JlaNumberConstants.N_ONE;
+                     i <= fuzzyQueryCountMappingsList.size(); i++) {
                     if (i >= topNNumber + JlaNumberConstants.N_ONE) {
                         break;
                     }
@@ -98,8 +95,7 @@ public class FuzzyQueryPrinter extends AbstractAnalysedReportPrinter {
                             .get(i - JlaNumberConstants.N_ONE);
                     String index = String.valueOf(i);
                     if (i < JlaNumberConstants.N_TEN) {
-                        index = String
-                                .valueOf(JlaNumberConstants.N_ZERO) + i;
+                        index = String.valueOf(JlaNumberConstants.N_ZERO) + i;
                     }
                     StringBuffer fuzzyQuery = new StringBuffer("---");
                     fuzzyQuery
@@ -118,12 +114,11 @@ public class FuzzyQueryPrinter extends AbstractAnalysedReportPrinter {
                     fuzzyQuery.append(JlaSymbolConstants.C_SYMBOL_NEXTLINE);
                     fuzzyQuery.append(JlaSymbolConstants.C_SYMBOL_NEXTLINE);
                     Files.append(fuzzyQuery.toString(), fuzzyQueryResultFile,
-                        processCharset);
+                            processCharset);
                 }
             }
         } catch (IOException e) {
-            logger.error("生成{}的FuzzyQuery报告失败......",
-                jdbcLogFile.getName(), e);
+            logger.error("生成{}的FuzzyQuery报告失败......", jdbcLogFile.getName(), e);
         }
     }
 }

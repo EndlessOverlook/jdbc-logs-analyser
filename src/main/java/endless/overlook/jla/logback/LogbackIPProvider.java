@@ -1,20 +1,18 @@
 package endless.overlook.jla.logback;
 
+import ch.qos.logback.core.PropertyDefinerBase;
+import endless.overlook.jla.constants.JlaSymbolConstants;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.core.PropertyDefinerBase;
-
-import endless.overlook.jla.constants.JlaSymbolConstants;
 
 /**
  * Description:<b>Logback日志文件IP属性生成器</b>
@@ -49,8 +47,8 @@ public class LogbackIPProvider extends PropertyDefinerBase {
                 Enumeration<InetAddress> ips = ni.getInetAddresses();
                 while (ips.hasMoreElements()) {
                     InetAddress inet = ips.nextElement();
-                    if (inet instanceof Inet4Address
-                            && (!inet.isLoopbackAddress())) {
+                    if (inet instanceof Inet4Address && (!inet
+                            .isLoopbackAddress())) {
                         ipList.add(inet.getHostAddress());
                     }
                 }
@@ -60,11 +58,11 @@ public class LogbackIPProvider extends PropertyDefinerBase {
                 ipList.add(addr.getHostAddress());
                 if (logger.isDebugEnabled()) {
                     logger.debug(String.format("读取到本机IP地址为【%s】",
-                        addr.getHostAddress()));
+                            addr.getHostAddress()));
                 }
             }
             return StringUtils.join(ipList.toArray(),
-                JlaSymbolConstants.C_SYMBOL_UNDERLINE);
+                    JlaSymbolConstants.C_SYMBOL_UNDERLINE);
         } catch (Exception e) {
             logger.error("获取本级网络IP地址出现异常......", e);
         }

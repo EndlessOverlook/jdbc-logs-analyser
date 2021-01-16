@@ -6,10 +6,10 @@
  */
 package endless.overlook.jla.threads;
 
+import endless.overlook.jla.service.printer.AbstractAnalysedReportPrinter;
+
 import java.util.Map;
 import java.util.concurrent.Callable;
-
-import endless.overlook.jla.service.printer.AbstractAnalysedReportPrinter;
 
 /**
  * Description:<b>报告输出线程</b>
@@ -17,6 +17,7 @@ import endless.overlook.jla.service.printer.AbstractAnalysedReportPrinter;
  * @author Ralph
  * @since 2018年10月15日下午6:21:40
  */
+
 /**
  * Description:<b>报告输出线程</b>
  *

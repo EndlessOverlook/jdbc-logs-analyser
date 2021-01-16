@@ -1,10 +1,9 @@
 package endless.overlook.jla.logback;
 
-import java.io.File;
+import ch.qos.logback.core.PropertyDefinerBase;
 
 import javax.swing.filechooser.FileSystemView;
-
-import ch.qos.logback.core.PropertyDefinerBase;
+import java.io.File;
 
 /**
  * Description:<b>Logback日志文件存放根路径属性生成器</b>

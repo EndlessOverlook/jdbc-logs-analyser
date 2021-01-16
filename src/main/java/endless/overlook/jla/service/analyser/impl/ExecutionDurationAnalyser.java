@@ -1,13 +1,13 @@
 package endless.overlook.jla.service.analyser.impl;
 
+import endless.overlook.jla.beans.BusinessSqlEntity;
+import endless.overlook.jla.constants.JlaConstants;
+import endless.overlook.jla.service.analyser.IBusinessSqlEntityAnalyser;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-
-import endless.overlook.jla.beans.BusinessSqlEntity;
-import endless.overlook.jla.constants.JlaConstants;
-import endless.overlook.jla.service.analyser.IBusinessSqlEntityAnalyser;
 
 /**
  * Description:<b>执行时间分析器</b>
@@ -42,17 +42,17 @@ public class ExecutionDurationAnalyser implements IBusinessSqlEntityAnalyser {
             List<BusinessSqlEntity> businessSqlEntityList,
             Map<String, Object> analysedResult) {
         Collections.sort(businessSqlEntityList,
-            new Comparator<BusinessSqlEntity>() {
-                @Override
-                public int compare(BusinessSqlEntity sqlEntity1,
-                        BusinessSqlEntity sqlEntity2) {
-                    Long count1 = sqlEntity1.getDurationTime();
-                    Long count2 = sqlEntity2.getDurationTime();
-                    return (int) (count2 - count1);
-                }
-            });
+                new Comparator<BusinessSqlEntity>() {
+                    @Override
+                    public int compare(BusinessSqlEntity sqlEntity1,
+                            BusinessSqlEntity sqlEntity2) {
+                        Long count1 = sqlEntity1.getDurationTime();
+                        Long count2 = sqlEntity2.getDurationTime();
+                        return (int) (count2 - count1);
+                    }
+                });
         analysedResult.put(JlaConstants.C_KEY_BUSINESS_BUSINESSSQLENTITYLIST,
-            businessSqlEntityList);
+                businessSqlEntityList);
         return analysedResult;
     }
 

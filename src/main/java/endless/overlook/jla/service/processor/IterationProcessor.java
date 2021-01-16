@@ -86,26 +86,26 @@ public class IterationProcessor {
         String jdbcFileTypeValue = configLoader
                 .getConfig(JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_FILETYPE);
         jdbcFileType = JlaNumberConstants.N_TWO;
-        if (StringUtils.isNotBlank(jdbcFileTypeValue)
-                && StringUtils.isNumeric(jdbcFileTypeValue)) {
+        if (StringUtils.isNotBlank(jdbcFileTypeValue) && StringUtils
+                .isNumeric(jdbcFileTypeValue)) {
             jdbcFileType = Integer.valueOf(jdbcFileTypeValue);
         }
         String headSqlNumberValue = configLoader.getConfig(
-            JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_HEADSQLNUMBERS);
+                JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_HEADSQLNUMBERS);
         headSqlNumber = JlaNumberConstants.N_ONE;
         if (StringUtils.isNotBlank(headSqlNumberValue)) {
             headSqlNumber = Integer.valueOf(headSqlNumberValue);
         }
         String excludeLines = configLoader.getConfig(
-            JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_EXCLUDELINES);
+                JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_EXCLUDELINES);
         excludeLinesArray = excludeLines
                 .split(JlaSymbolConstants.C_SYMBOL_SEPERATOR_COMMAORSEMICOLON);
         String beginTimeString = configLoader
                 .getConfig(JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_BEGINTIME);
         String endTimeString = configLoader
                 .getConfig(JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_ENDTIME);
-        if (StringUtils.isNotBlank(beginTimeString)
-                && StringUtils.isNotBlank(endTimeString)) {
+        if (StringUtils.isNotBlank(beginTimeString) && StringUtils
+                .isNotBlank(endTimeString)) {
             DateTime beginTime = null, endTime = null;
             try {
                 beginTime = DateTime.parse(beginTimeString, dateTimeFormat);
@@ -136,20 +136,20 @@ public class IterationProcessor {
      * @throws IOException
      */
     public boolean processLine(String currentLine) {
-        if (jdbcFileType != JlaNumberConstants.N_TWO
-                && StringUtils.isBlank(currentLine)) {
+        if (jdbcFileType != JlaNumberConstants.N_TWO && StringUtils
+                .isBlank(currentLine)) {
             return true;
         }
         currentLine = StringUtils.trimToEmpty(currentLine);
         boolean ifContinueIteration = true;
-        if (jdbcFileType.equals(
-            JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_FILETYPE_SQLTIMING)) {
+        if (jdbcFileType
+                .equals(JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_FILETYPE_SQLTIMING)) {
             //sqltiming文件使用{executed in或者{FAILED after分隔每条SQL
-            ifContinueIteration = StringUtils.isNotBlank(currentLine)
-                    && !StringUtils.startsWithIgnoreCase(currentLine,
-                        "{executed in")
-                    && !StringUtils.startsWithIgnoreCase(currentLine,
-                        "{FAILED after");
+            ifContinueIteration =
+                    StringUtils.isNotBlank(currentLine) && !StringUtils
+                            .startsWithIgnoreCase(currentLine, "{executed in")
+                            && !StringUtils
+                            .startsWithIgnoreCase(currentLine, "{FAILED after");
         } else {
             //sqlonly文件使用空行分隔每条SQL
             ifContinueIteration = StringUtils.isNotBlank(currentLine);
@@ -161,7 +161,7 @@ public class IterationProcessor {
                 }
                 if (StringUtils.contains(currentLine, excludeLine)) {
                     logger.warn("当前行[{}]包含应过滤字符[{}]，已被过滤......", currentLine,
-                        excludeLine);
+                            excludeLine);
                     return true;
                 }
             }
@@ -175,36 +175,34 @@ public class IterationProcessor {
                         String ymdPattern = patternsArray[JlaNumberConstants.N_ZERO];
                         String hmsPattern = patternsArray[JlaNumberConstants.N_ONE];
                         if (StringUtils.contains(hmsPattern,
-                            JlaSymbolConstants.C_SYMBOL_DOT)) {
-                            hmsPattern = StringUtils.substringBeforeLast(
-                                hmsPattern, JlaSymbolConstants.C_SYMBOL_DOT);
+                                JlaSymbolConstants.C_SYMBOL_DOT)) {
+                            hmsPattern = StringUtils
+                                    .substringBeforeLast(hmsPattern,
+                                            JlaSymbolConstants.C_SYMBOL_DOT);
                         }
                         DateTime currentLineTime = null;
                         try {
-                            currentLineTime = DateTime.parse(
-                                ymdPattern + JlaSymbolConstants.C_SYMBOL_SPACE
-                                        + hmsPattern,
-                                dateTimeFormat);
+                            currentLineTime = DateTime.parse(ymdPattern
+                                    + JlaSymbolConstants.C_SYMBOL_SPACE
+                                    + hmsPattern, dateTimeFormat);
                         } catch (IllegalArgumentException e) {
-                            logger.error("解析当前SQL发出时间{}失败......",
-                                ymdPattern + JlaSymbolConstants.C_SYMBOL_SPACE
-                                        + hmsPattern,
-                                e);
+                            logger.error("解析当前SQL发出时间{}失败......", ymdPattern
+                                    + JlaSymbolConstants.C_SYMBOL_SPACE
+                                    + hmsPattern, e);
                         } catch (Exception e) {
-                            logger.error("解析当前SQL发出时间{}失败......",
-                                ymdPattern + JlaSymbolConstants.C_SYMBOL_SPACE
-                                        + hmsPattern,
-                                e);
+                            logger.error("解析当前SQL发出时间{}失败......", ymdPattern
+                                    + JlaSymbolConstants.C_SYMBOL_SPACE
+                                    + hmsPattern, e);
                         }
                         if (currentLineTime != null) {
                             if (!((currentLineTime.isAfter(
-                                processTimePeriod[JlaNumberConstants.N_ZERO])
+                                    processTimePeriod[JlaNumberConstants.N_ZERO])
                                     || currentLineTime.isEqual(
-                                        processTimePeriod[JlaNumberConstants.N_ZERO]))
+                                    processTimePeriod[JlaNumberConstants.N_ZERO]))
                                     && (currentLineTime.isBefore(
-                                        processTimePeriod[JlaNumberConstants.N_ONE])
-                                            || currentLineTime.isEqual(
-                                                processTimePeriod[JlaNumberConstants.N_ONE])))) {
+                                    processTimePeriod[JlaNumberConstants.N_ONE])
+                                    || currentLineTime.isEqual(
+                                    processTimePeriod[JlaNumberConstants.N_ONE])))) {
                                 sqlEntity.setIsFiltered(true);
                                 currentLineOfEachSql++;
                                 return true;
@@ -216,30 +214,30 @@ public class IterationProcessor {
             if (currentLineOfEachSql <= headSqlNumber) {
                 //TODO SQL头信息为多行时，信息会拼接不全，但是不影响主要展示信息，暂不处理
                 sqlEntity.setHeadInfo(currentLine);
-            } else if (currentLineOfEachSql == headSqlNumber
-                    + JlaNumberConstants.N_ONE) {
+            } else if (currentLineOfEachSql
+                    == headSqlNumber + JlaNumberConstants.N_ONE) {
                 //存在具体业务SQL开头没有连接号的情况
-                String firstWord = StringUtils
-                        .trimToEmpty(StringUtils.substringBefore(currentLine,
-                            JlaSymbolConstants.C_SYMBOL_DOT));
+                String firstWord = StringUtils.trimToEmpty(StringUtils
+                        .substringBefore(currentLine,
+                                JlaSymbolConstants.C_SYMBOL_DOT));
                 if (StringUtils.isNumeric(firstWord)) {
                     //去掉业务SQL前面的连接号
                     plainSqlBuffer.append(
-                        /**
-                         * 因为每一行都进行了trimToEmpty，若上一行结尾是表名，下一行开始是简称
-                         * 不加空格会改变业务表表名，所以每行拼接时提前加一个空格
-                         */
-                        JlaSymbolConstants.C_SYMBOL_SPACE
-                                + StringUtils.substring(currentLine,
-                                    StringUtils.indexOfIgnoreCase(currentLine,
-                                        ". ")
+                            /**
+                             * 因为每一行都进行了trimToEmpty，若上一行结尾是表名，下一行开始是简称
+                             * 不加空格会改变业务表表名，所以每行拼接时提前加一个空格
+                             */
+                            JlaSymbolConstants.C_SYMBOL_SPACE + StringUtils
+                                    .substring(currentLine, StringUtils
+                                            .indexOfIgnoreCase(currentLine,
+                                                    ". ")
                                             + JlaNumberConstants.N_TWO));
                 } else {
                     plainSqlBuffer.append(currentLine);
                 }
             } else {
-                plainSqlBuffer.append(
-                    JlaSymbolConstants.C_SYMBOL_SPACE + currentLine);
+                plainSqlBuffer.append(JlaSymbolConstants.C_SYMBOL_SPACE
+                        + currentLine);
             }
             currentLineOfEachSql++;
         } else {
@@ -251,7 +249,7 @@ public class IterationProcessor {
                 return true;
             }
             sqlEntity.setPlainSql(
-                StringUtils.trimToEmpty(plainSqlBuffer.toString()));
+                    StringUtils.trimToEmpty(plainSqlBuffer.toString()));
 
             //解析SQL执行耗时统计
             parseDuration(currentLine, sqlEntity);
@@ -277,12 +275,12 @@ public class IterationProcessor {
      */
     private void parseDuration(String currentLine,
             BusinessSqlEntity sqlEntity) {
-        if (jdbcFileType.equals(
-            JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_FILETYPE_SQLTIMING)) {
-            String currentDuration = StringUtils.trimToEmpty(currentLine).split(
-                JlaSymbolConstants.C_SYMBOL_SPACE)[JlaNumberConstants.N_TWO];
-            if (StringUtils.isNotBlank(currentDuration)
-                    && StringUtils.isNumeric(currentDuration)) {
+        if (jdbcFileType
+                .equals(JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_FILETYPE_SQLTIMING)) {
+            String currentDuration = StringUtils.trimToEmpty(currentLine)
+                    .split(JlaSymbolConstants.C_SYMBOL_SPACE)[JlaNumberConstants.N_TWO];
+            if (StringUtils.isNotBlank(currentDuration) && StringUtils
+                    .isNumeric(currentDuration)) {
                 Long currentDurationTime = Long.valueOf(currentDuration);
                 sqlEntity.setDurationTime(currentDurationTime);
             }
@@ -306,14 +304,14 @@ public class IterationProcessor {
         }
         if (StringUtils
                 .startsWithIgnoreCase(sqlEntity.getPlainSql(), "BATCHING")
-                || StringUtils.startsWithIgnoreCase(sqlEntity.getPlainSql(),
-                    "SET")
-                || StringUtils.startsWithIgnoreCase(sqlEntity.getPlainSql(),
-                    "{CALL")
-                || StringUtils.startsWithIgnoreCase(sqlEntity.getPlainSql(),
-                    "EXEC")
-                || StringUtils.containsIgnoreCase(sqlEntity.getPlainSql(),
-                    "ESCAPE")) {
+                || StringUtils
+                .startsWithIgnoreCase(sqlEntity.getPlainSql(), "SET")
+                || StringUtils
+                .startsWithIgnoreCase(sqlEntity.getPlainSql(), "{CALL")
+                || StringUtils
+                .startsWithIgnoreCase(sqlEntity.getPlainSql(), "EXEC")
+                || StringUtils
+                .containsIgnoreCase(sqlEntity.getPlainSql(), "ESCAPE")) {
             //手动解析业务表表名
             setTableNameManually(sqlEntity);
         } else {
@@ -337,40 +335,40 @@ public class IterationProcessor {
             if (statement instanceof Insert) {
                 Insert insertStatement = (Insert) statement;
                 Table table = insertStatement.getTable();
-                operateTableNames = StringUtils.join(table,
-                    JlaSymbolConstants.C_SYMBOL_COMMA);
+                operateTableNames = StringUtils
+                        .join(table, JlaSymbolConstants.C_SYMBOL_COMMA);
             } else if (statement instanceof Delete) {
                 Delete deleteStatement = (Delete) statement;
                 Table table = deleteStatement.getTable();
-                operateTableNames = StringUtils.join(table,
-                    JlaSymbolConstants.C_SYMBOL_COMMA);
+                operateTableNames = StringUtils
+                        .join(table, JlaSymbolConstants.C_SYMBOL_COMMA);
             } else if (statement instanceof Truncate) {
                 Truncate truncateStatement = (Truncate) statement;
                 Table table = truncateStatement.getTable();
-                operateTableNames = StringUtils.join(table,
-                    JlaSymbolConstants.C_SYMBOL_COMMA);
+                operateTableNames = StringUtils
+                        .join(table, JlaSymbolConstants.C_SYMBOL_COMMA);
             } else if (statement instanceof Update) {
                 Update updateStatement = (Update) statement;
                 List<Table> tableNameList = (List<Table>) updateStatement
                         .getTables();
-                operateTableNames = StringUtils.join(tableNameList,
-                    JlaSymbolConstants.C_SYMBOL_COMMA);
+                operateTableNames = StringUtils
+                        .join(tableNameList, JlaSymbolConstants.C_SYMBOL_COMMA);
             } else if (statement instanceof Select) {
                 TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
                 List<String> tableNames = tablesNamesFinder
                         .getTableList(statement);
-                operateTableNames = StringUtils.join(tableNames,
-                    JlaSymbolConstants.C_SYMBOL_COMMA);
+                operateTableNames = StringUtils
+                        .join(tableNames, JlaSymbolConstants.C_SYMBOL_COMMA);
             }
             sqlEntity.setTableName(operateTableNames);
             sqlEntity.setParserType(
-                JlaConstants.C_PROPERTY_PARSERTYPE_JSQLPARSER);
+                    JlaConstants.C_PROPERTY_PARSERTYPE_JSQLPARSER);
         } catch (JSQLParserException e) {
             logger.warn("自动解析SQL提取业务表名失败！手动提取......\n{}",
-                sqlEntity.getPlainSql(), e);
+                    sqlEntity.getPlainSql(), e);
             setTableNameManually(sqlEntity);
             logger.warn("手动提取SQL[{}]的业务表表名[{}]......", sqlEntity.getPlainSql(),
-                sqlEntity.getTableName());
+                    sqlEntity.getTableName());
         }
     }
 
@@ -389,15 +387,16 @@ public class IterationProcessor {
             sqlEntity.setTableName(JlaConstants.C_PROPERTY_PARSERTYPE_BATCH);
             String[] batchSqlStringArray = plainSql
                     .split(" \\{WARNING: Statement used to run SQL\\} ");
-            for (int i = JlaNumberConstants.N_ONE; i < batchSqlStringArray.length; i++) {
+            for (int i = JlaNumberConstants.N_ONE;
+                 i < batchSqlStringArray.length; i++) {
                 String batchSql = StringUtils.EMPTY;
                 if (i == batchSqlStringArray.length
                         - JlaNumberConstants.N_ONE) {
                     batchSql = batchSqlStringArray[i];
                 } else {
-                    batchSql = StringUtils.substringBeforeLast(
-                        batchSqlStringArray[i],
-                        JlaSymbolConstants.C_SYMBOL_SPACE);
+                    batchSql = StringUtils
+                            .substringBeforeLast(batchSqlStringArray[i],
+                                    JlaSymbolConstants.C_SYMBOL_SPACE);
                 }
                 BusinessSqlEntity subSqlEntity = new BusinessSqlEntity(
                         batchSql);
@@ -411,10 +410,10 @@ public class IterationProcessor {
         } else if (StringUtils.startsWithIgnoreCase(plainSql, "SELECT")
                 || StringUtils.startsWithIgnoreCase(plainSql, "SET ROWCOUNT")
                 || StringUtils.startsWithIgnoreCase(plainSql,
-                    "SET TRANSACTION ISOLATION LEVEL")) {
+                "SET TRANSACTION ISOLATION LEVEL")) {
             //TODO UNION可能是在子查询或者EXISTS子句中
-            if (StringUtils.containsIgnoreCase(plainSql, "UNION")
-                    || StringUtils.containsIgnoreCase(plainSql, "UNION ALL")) {
+            if (StringUtils.containsIgnoreCase(plainSql, "UNION") || StringUtils
+                    .containsIgnoreCase(plainSql, "UNION ALL")) {
                 String[] unionPatterns = plainSql.split("UNION ALL |UNION ");
                 StringBuffer tableNameBuffer = new StringBuffer();
                 for (String unionPatter : unionPatterns) {
@@ -426,16 +425,16 @@ public class IterationProcessor {
                 tableName = getTableNameBySelect(plainSql);
             }
         } else if (StringUtils.startsWithIgnoreCase(plainSql, "INSERT INTO")) {
-            tableName = StringUtils.substringBetween(plainSql, "INSERT INTO ",
-                "(");
+            tableName = StringUtils
+                    .substringBetween(plainSql, "INSERT INTO ", "(");
         } else if (StringUtils.startsWithIgnoreCase(plainSql, "UPDATE")) {
-            tableName = StringUtils.substringBetween(plainSql, "UPDATE ",
-                "SET");
+            tableName = StringUtils
+                    .substringBetween(plainSql, "UPDATE ", "SET");
         } else if (StringUtils.startsWithIgnoreCase(plainSql, "DELETE")) {
             if (StringUtils.indexOfIgnoreCase(plainSql, "FROM ") != -1) {
                 if (StringUtils.indexOfIgnoreCase(plainSql, "WHERE ") != -1) {
-                    tableName = StringUtils.substringBetween(plainSql, "FROM ",
-                        "WHERE ");
+                    tableName = StringUtils
+                            .substringBetween(plainSql, "FROM ", "WHERE ");
                 } else {
                     tableName = StringUtils.substringAfter(plainSql, "FROM ");
                 }
@@ -453,52 +452,54 @@ public class IterationProcessor {
                         continue;
                     }
                     if (StringUtils.contains(tableNamePattern,
-                        JlaSymbolConstants.C_SYMBOL_COMMA)) {
+                            JlaSymbolConstants.C_SYMBOL_COMMA)) {
                         //存在多表等值联查时，后面没有跟空格的情况，截取逗号后面的部分
-                        tableNamePattern = StringUtils.substringAfter(
-                            tableNamePattern,
-                            JlaSymbolConstants.C_SYMBOL_COMMA);
+                        tableNamePattern = StringUtils
+                                .substringAfter(tableNamePattern,
+                                        JlaSymbolConstants.C_SYMBOL_COMMA);
                     }
                     tableNamePattern = StringUtils.replace(tableNamePattern,
-                        JlaSymbolConstants.C_SYMBOL_COMMA, StringUtils.EMPTY);
+                            JlaSymbolConstants.C_SYMBOL_COMMA,
+                            StringUtils.EMPTY);
                     if (StringUtils.indexOf(tableNamePattern, "DBO.") != -1) {
                         plainTableNameBuffer.append(StringUtils
                                 .substringAfter(tableNamePattern, "DBO."));
                         plainTableNameBuffer.append(",");
-                    } else if (StringUtils.indexOf(tableNamePattern,
-                        "dbo.") != -1) {
+                    } else if (StringUtils.indexOf(tableNamePattern, "dbo.")
+                            != -1) {
                         plainTableNameBuffer.append(StringUtils
                                 .substringAfter(tableNamePattern, "dbo."));
                         plainTableNameBuffer.append(",");
-                    } else if (StringUtils.indexOf(tableNamePattern,
-                        "..") != -1) {
-                        plainTableNameBuffer.append(
-                            StringUtils.substringAfter(tableNamePattern, ".."));
+                    } else if (StringUtils.indexOf(tableNamePattern, "..")
+                            != -1) {
+                        plainTableNameBuffer.append(StringUtils
+                                .substringAfter(tableNamePattern, ".."));
                         plainTableNameBuffer.append(",");
-                    } else if (StringUtils.indexOfIgnoreCase(tableNamePattern,
-                        "T_") != -1) {
+                    } else if (StringUtils
+                            .indexOfIgnoreCase(tableNamePattern, "T_") != -1) {
                         plainTableNameBuffer.append(tableNamePattern);
                         plainTableNameBuffer.append(",");
                     }
                 }
-                sqlEntity.setTableName(StringUtils.substringBeforeLast(
-                    plainTableNameBuffer.toString(), ","));
+                sqlEntity.setTableName(StringUtils
+                        .substringBeforeLast(plainTableNameBuffer.toString(),
+                                ","));
                 sqlEntity.setParserType(
-                    JlaConstants.C_PROPERTY_PARSERTYPE_MANUAL);
+                        JlaConstants.C_PROPERTY_PARSERTYPE_MANUAL);
             } else if (StringUtils.indexOfIgnoreCase(tableName, "DBO.") != -1) {
                 sqlEntity.setTableName(
-                    StringUtils.substringAfter(tableName, "DBO."));
+                        StringUtils.substringAfter(tableName, "DBO."));
                 sqlEntity.setParserType(
-                    JlaConstants.C_PROPERTY_PARSERTYPE_MANUAL);
+                        JlaConstants.C_PROPERTY_PARSERTYPE_MANUAL);
             } else if (StringUtils.indexOfIgnoreCase(tableName, "..") != -1) {
                 sqlEntity.setTableName(
-                    StringUtils.substringAfter(tableName, ".."));
+                        StringUtils.substringAfter(tableName, ".."));
                 sqlEntity.setParserType(
-                    JlaConstants.C_PROPERTY_PARSERTYPE_MANUAL);
+                        JlaConstants.C_PROPERTY_PARSERTYPE_MANUAL);
             } else {
                 sqlEntity.setTableName(tableName);
                 sqlEntity.setParserType(
-                    JlaConstants.C_PROPERTY_PARSERTYPE_MANUAL);
+                        JlaConstants.C_PROPERTY_PARSERTYPE_MANUAL);
             }
         }
     }
@@ -522,14 +523,14 @@ public class IterationProcessor {
                 Integer firstWhereIndex = StringUtils
                         .indexOfIgnoreCase(plainSql, "WHERE ");
                 String whereClauseSql = StringUtils.substring(plainSql,
-                    firstWhereIndex + JlaNumberConstants.N_SIX);
+                        firstWhereIndex + JlaNumberConstants.N_SIX);
                 tableName = getSelectTableName(whereClauseSql, tableName);
             } else if (StringUtils.containsIgnoreCase(plainSql, "ORDER BY ")) {
-                tableName = StringUtils.substringBetween(plainSql, "FROM ",
-                    "ORDER BY ");
+                tableName = StringUtils
+                        .substringBetween(plainSql, "FROM ", "ORDER BY ");
             } else if (StringUtils.containsIgnoreCase(plainSql, "GROUP BY ")) {
-                tableName = StringUtils.substringBetween(plainSql, "FROM ",
-                    "GROUP BY ");
+                tableName = StringUtils
+                        .substringBetween(plainSql, "FROM ", "GROUP BY ");
             } else {
                 tableName = StringUtils.substringAfter(plainSql, "FROM ");
             }
@@ -550,22 +551,23 @@ public class IterationProcessor {
      *              拼接后的表名字段
      */
     private String getSelectTableName(String plainSql, String tableName) {
-        if (StringUtils.containsIgnoreCase(plainSql, "WHERE ")
-                && StringUtils.containsIgnoreCase(plainSql, "FROM ")) {
-            Integer firstWhereIndex = StringUtils.indexOfIgnoreCase(plainSql,
-                "WHERE ");
-            String selectfromClauseSql = StringUtils.substring(plainSql,
-                JlaNumberConstants.N_ZERO, firstWhereIndex);
+        if (StringUtils.containsIgnoreCase(plainSql, "WHERE ") && StringUtils
+                .containsIgnoreCase(plainSql, "FROM ")) {
+            Integer firstWhereIndex = StringUtils
+                    .indexOfIgnoreCase(plainSql, "WHERE ");
+            String selectfromClauseSql = StringUtils
+                    .substring(plainSql, JlaNumberConstants.N_ZERO,
+                            firstWhereIndex);
             if (StringUtils.isNotBlank(selectfromClauseSql)) {
                 Integer lastFromIndex = StringUtils
                         .lastIndexOfIgnoreCase(selectfromClauseSql, "FROM ");
                 //取整个SQL第一个where和它之前字句中最后一个select之间的为主查询的表名
                 String thisTableName = StringUtils.substring(plainSql,
-                    lastFromIndex + JlaNumberConstants.N_FIVE,
-                    firstWhereIndex);
+                        lastFromIndex + JlaNumberConstants.N_FIVE,
+                        firstWhereIndex);
                 //TODO 存在YWST.. T_ZX_AJ(点后面多个空格)的特殊情况
                 if (StringUtils.containsIgnoreCase(thisTableName,
-                    JlaSymbolConstants.C_SYMBOL_HASH)) {
+                        JlaSymbolConstants.C_SYMBOL_HASH)) {
                     //临时表的表名不拼接
                     return tableName;
                 }

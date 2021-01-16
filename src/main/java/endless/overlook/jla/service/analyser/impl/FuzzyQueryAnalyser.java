@@ -1,17 +1,12 @@
 package endless.overlook.jla.service.analyser.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import endless.overlook.jla.beans.BusinessSqlEntity;
 import endless.overlook.jla.constants.JlaConstants;
 import endless.overlook.jla.constants.JlaNumberConstants;
 import endless.overlook.jla.service.analyser.IBusinessSqlEntityAnalyser;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.*;
 
 /**
  * Description:<b>模糊查询分析器</b>
@@ -51,17 +46,18 @@ public class FuzzyQueryAnalyser implements IBusinessSqlEntityAnalyser {
         //模糊查询操作情况
         for (BusinessSqlEntity businessSqlEntity : businessSqlEntityList) {
             if (StringUtils.containsIgnoreCase(businessSqlEntity.getPlainSql(),
-                "LIKE '%")) {
+                    "LIKE '%")) {
                 if (!fuzzyQuerySql2EntityMap
                         .containsKey(businessSqlEntity.getPlainSql())) {
                     fuzzyQuerySql2EntityMap.put(businessSqlEntity.getPlainSql(),
-                        JlaNumberConstants.N_ONE);
+                            JlaNumberConstants.N_ONE);
                 } else {
-                    Integer fuzzyQuerySqlCount = (Integer) (fuzzyQuerySql2EntityMap
-                            .get(businessSqlEntity.getPlainSql()))
-                            + JlaNumberConstants.N_ONE;
+                    Integer fuzzyQuerySqlCount =
+                            (Integer) (fuzzyQuerySql2EntityMap
+                                    .get(businessSqlEntity.getPlainSql()))
+                                    + JlaNumberConstants.N_ONE;
                     fuzzyQuerySql2EntityMap.put(businessSqlEntity.getPlainSql(),
-                        fuzzyQuerySqlCount);
+                            fuzzyQuerySqlCount);
                 }
             }
         }
@@ -69,15 +65,15 @@ public class FuzzyQueryAnalyser implements IBusinessSqlEntityAnalyser {
         List<Map.Entry<String, Integer>> fuzzyQueryCountMappingsList = new ArrayList<Map.Entry<String, Integer>>(
                 fuzzyQuerySql2EntityMap.entrySet());
         Collections.sort(fuzzyQueryCountMappingsList,
-            new Comparator<Map.Entry<String, Integer>>() {
-                @Override
-                public int compare(Map.Entry<String, Integer> mappings1,
-                        Map.Entry<String, Integer> mappings2) {
-                    return mappings2.getValue() - mappings1.getValue();
-                }
-            });
+                new Comparator<Map.Entry<String, Integer>>() {
+                    @Override
+                    public int compare(Map.Entry<String, Integer> mappings1,
+                            Map.Entry<String, Integer> mappings2) {
+                        return mappings2.getValue() - mappings1.getValue();
+                    }
+                });
         analysedResult.put(JlaConstants.C_KEY_BUSINESS_FUZZYQUERYSQLLIST,
-            fuzzyQueryCountMappingsList);
+                fuzzyQueryCountMappingsList);
         return analysedResult;
     }
 

@@ -1,10 +1,10 @@
 package endless.overlook.jla.service.printer;
 
+import endless.overlook.jla.config.ConfigLoader;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Map;
-
-import endless.overlook.jla.config.ConfigLoader;
 
 /**
  * Description:<b>报告结果输出器</b>
@@ -13,7 +13,6 @@ import endless.overlook.jla.config.ConfigLoader;
  * @since 2018-4-26 下午3:33:48
  */
 public abstract class AbstractAnalysedReportPrinter {
-
 
     /** 目标JDBC日志文件 **/
     protected File jdbcLogFile;
@@ -65,8 +64,8 @@ public abstract class AbstractAnalysedReportPrinter {
      * @param configLoader
      *              配置加载器
      */
-    public AbstractAnalysedReportPrinter(
-            File jdbcLogFile, Charset processCharset, File analysingDirectory,
+    public AbstractAnalysedReportPrinter(File jdbcLogFile,
+            Charset processCharset, File analysingDirectory,
             ConfigLoader configLoader) {
         super();
         this.jdbcLogFile = jdbcLogFile;

@@ -1,12 +1,6 @@
 package endless.overlook.jla.service.printer.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.google.common.io.Files;
 import endless.overlook.jla.beans.BusinessPlainTableEntity;
 import endless.overlook.jla.config.ConfigLoader;
 import endless.overlook.jla.constants.JlaConfigConstants;
@@ -20,7 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Description:<b>实体表操作情况输出器</b>
@@ -47,11 +46,9 @@ public class PlainTablePrinter extends AbstractAnalysedReportPrinter {
      * @param configLoader
      *              配置加载器
      */
-    public PlainTablePrinter(
-            File jdbcLogFile, Charset processCharset, File analysingDirectory,
-            ConfigLoader configLoader) {
-        super(jdbcLogFile, processCharset,
-                analysingDirectory, configLoader);
+    public PlainTablePrinter(File jdbcLogFile, Charset processCharset,
+            File analysingDirectory, ConfigLoader configLoader) {
+        super(jdbcLogFile, processCharset, analysingDirectory, configLoader);
     }
 
     /**
@@ -66,8 +63,8 @@ public class PlainTablePrinter extends AbstractAnalysedReportPrinter {
     public void printReport(Map<String, Object> resultMap) {
         try {
             //业务表操作次数统计
-            String topNNumberString = configLoader
-                    .getConfig(JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_TABLEHITTOPNUMBER);
+            String topNNumberString = configLoader.getConfig(
+                    JlaConfigConstants.C_KEY_JLA_JDBCLOGFILES_TABLEHITTOPNUMBER);
             Integer topNNumber = null;
             if (StringUtils.isNotBlank(topNNumberString)) {
                 topNNumber = Integer.valueOf(topNNumberString);
@@ -88,10 +85,10 @@ public class PlainTablePrinter extends AbstractAnalysedReportPrinter {
                         plainTableReportName.toString());
                 plainTableResultFile.createNewFile();
                 logger.info("开始生成[{}]分析结果TopPlainTable报告......",
-                    plainTableResultFile.getName());
+                        plainTableResultFile.getName());
 
-                for (int i = JlaNumberConstants.N_ONE; i <= plainTableCountMappingsList
-                        .size(); i++) {
+                for (int i = JlaNumberConstants.N_ONE;
+                     i <= plainTableCountMappingsList.size(); i++) {
                     if (i >= topNNumber + JlaNumberConstants.N_ONE) {
                         break;
                     }
@@ -101,8 +98,7 @@ public class PlainTablePrinter extends AbstractAnalysedReportPrinter {
                             .getValue();
                     String index = String.valueOf(i);
                     if (i < JlaNumberConstants.N_TEN) {
-                        index = String
-                                .valueOf(JlaNumberConstants.N_ZERO) + i;
+                        index = String.valueOf(JlaNumberConstants.N_ZERO) + i;
                     }
                     StringBuffer plainTable = new StringBuffer("---");
                     plainTable
@@ -144,12 +140,11 @@ public class PlainTablePrinter extends AbstractAnalysedReportPrinter {
                     plainTable.append(JlaSymbolConstants.C_SYMBOL_NEXTLINE);
                     plainTable.append(JlaSymbolConstants.C_SYMBOL_NEXTLINE);
                     Files.append(plainTable.toString(), plainTableResultFile,
-                        processCharset);
+                            processCharset);
                 }
             }
         } catch (IOException e) {
-            logger.error("生成{}的PlainTable报告失败......",
-                jdbcLogFile.getName(), e);
+            logger.error("生成{}的PlainTable报告失败......", jdbcLogFile.getName(), e);
         }
     }
 }

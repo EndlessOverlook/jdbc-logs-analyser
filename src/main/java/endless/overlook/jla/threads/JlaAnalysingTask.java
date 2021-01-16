@@ -1,11 +1,11 @@
 package endless.overlook.jla.threads;
 
+import endless.overlook.jla.beans.BusinessSqlEntity;
+import endless.overlook.jla.service.analyser.IBusinessSqlEntityAnalyser;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-
-import endless.overlook.jla.beans.BusinessSqlEntity;
-import endless.overlook.jla.service.analyser.IBusinessSqlEntityAnalyser;
 
 /**
  * Description:<b>日志分析线程</b>
@@ -56,7 +56,7 @@ public class JlaAnalysingTask implements Callable<Boolean> {
     @Override
     public Boolean call() throws Exception {
         sqlEntityAnalyser.analyseBusinessSqlEntity(businessSqlEntityList,
-            analysedResult);
+                analysedResult);
         return true;
     }
 

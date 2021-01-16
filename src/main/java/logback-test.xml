@@ -1,40 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
-    <define name="baseHome" class="endless.overlook.jla.logback.LogbackBaseHomeProvider"/>
+    <define name="baseHome"
+            class="endless.overlook.jla.logback.LogbackBaseHomeProvider"/>
     <define name="ip" class="endless.overlook.jla.logback.LogbackIPProvider"/>
     <property name="appname" value="JLA"/>
-	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
-		<Target>System.out</Target>
-		<encoder>
-			<pattern>
-%d{yyyy-MM-dd HH:mm:ss} [%-5level] [%-5thread] %logger{20}
-    -%msg%n</pattern>
-		</encoder>
-	</appender>
-	<appender name="file"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<File>${baseHome}/${appname}_${ip}.log</File>
-		<encoder>
-			<pattern>
-%d{yyyy-MM-dd HH:mm:ss} [%-5level] [%-5thread] %logger{20}
-    -%msg%n</pattern>
-		</encoder>
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>info</level>
-		</filter>
-		<append>true</append>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${baseHome}/${appname}_${ip}_%d{yyyy-MM-dd}.log
-			</fileNamePattern>
-		</rollingPolicy>
-	</appender>
-	<logger name="endless.overlook" level="info" additivity="false">
-		<appender-ref ref="stdout" />
-		<appender-ref ref="file" />
-	</logger>
-	<root level="error">
-	    <appender-ref ref="stdout" />
-		<appender-ref ref="file" />
-	</root>
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <Target>System.out</Target>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss} [%-5level] [%-5thread] %logger{20}
+                -%msg%n
+            </pattern>
+        </encoder>
+    </appender>
+    <appender name="file"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${baseHome}/${appname}_${ip}.log</File>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss} [%-5level] [%-5thread] %logger{20}
+                -%msg%n
+            </pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
+        <append>true</append>
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${baseHome}/${appname}_${ip}_%d{yyyy-MM-dd}.log
+            </fileNamePattern>
+        </rollingPolicy>
+    </appender>
+    <logger name="endless.overlook" level="info" additivity="false">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="file"/>
+    </logger>
+    <root level="error">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="file"/>
+    </root>
 </configuration>
